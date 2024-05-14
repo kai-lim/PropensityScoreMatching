@@ -1,0 +1,30 @@
+---
+title: "Notes"
+format: html
+---
+
+# Propensity score matching 
+
+[Propensity score (PS)](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8246231/) is the probability of receiving certain treatments, conditional on observed baseline covariates, and is estimated by using modeling to predict treatment allocation with covariates.  In simple terms, PSA is based on the hypothesis that two patients with similar PSs have covariates which come from similar distributions. This means that by selecting or reweighting samples based on PS, researchers create new datasets where covariates are similar between treatment and control groups. For each individual, the propensity score can be intuitively considered as the probability of recentiving treatment, calcuated from a range of covariates (and potential confounders).
+
+When compared with conventional balancing methods, PS analysis has two major advantages: dimension reduction and design separation. 
+
+I took an example from this [R blogger post](https://www.r-bloggers.com/2022/04/propensity-score-matching/), where the research question was asked: 
+
+*Is smoking associated with psychological distress?*
+
+Each smoker in the dataset will be matched to a non-smoker based on a range of covariates, e.g., sex, indigenous status, high school completion, marital status, region of residence, langauge background, age, and risky alcohol use.
+
+Two steps were taken for propensity score matching: 
+
+1. Match each smoker to a non-smoker based on propensity score, which is calculated based on a range of covariates. 
+2. Check if balance between smokers (i.e., the treated or exposed group) and non-smokers (i.e., the control group) is achieved. We want both groups to have similar characteristics. 
+
+We will use data from this R blogger post. 
+
+### Load data
+```{r}
+library(tidyverse)
+
+data <- read_csv("https://raw.githubusercontent.com/gckc123/ExampleData/main/smoking_psyc_distress.csv")
+```
