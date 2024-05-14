@@ -22,9 +22,36 @@ Two steps were taken for propensity score matching:
 
 We will use data from this R blogger post. 
 
-### Load data
+### Load libraries and data
 ```{r}
 library(tidyverse)
+library(MatchIt)
+library(lmtest)
+library(sandwich)
 
 data <- read_csv("https://raw.githubusercontent.com/gckc123/ExampleData/main/smoking_psyc_distress.csv")
+
+head(data)
+```
+
+
+Variables of interest: 
+
+Sex (0: Female; 1: Male)
+indigenous - Ingigenous status (0: Non-indigenous; 1: indigenous)
+high_school - Education level (0: not finished high school; 1: finished high school)
+partnered - Marital status (0: not partnered; 1: partnered)
+remoteness - region of residence (0: major cities; 1: inner regional; 2: outer regional)
+language - Language background (0: non-English speaking; 1: English speaking)
+Smoker - Smoking status (0: non-smoker; 1: smoker)
+risky_alcohol - Risky alcohol use (0: not risky; 1: risky)
+psyc_distress - Psychological distress. Measure ranges from 10 to 50.
+age - Age of the participants
+
+### The MatchIt R package
+[`MatchIt`](https://cran.r-project.org/web/packages/MatchIt/vignettes/MatchIt.html) implements the suggestions of Ho et al. (2007) for improving parametric statistical models for estimating treatment effects in observational studies and reducing model dependence by preprocessing data with semi-parametric and non-parametric matching methods. After appropriately preprocessing with `MatchIt`, researchers can use whatever parametric model they would have used without `MatchIt` and produce inferences that are more robust and less sensitive to modeling assumptions. `MatchIt` reduces the dependence of causal inferences on commonly made, but hard-to-justify, statistical modeling assumptions using a large range of sophisticated matching methods. The package includes several popular approaches to matching and provides access to methods implemented in other packages through its single, unified, and easy-to-use interface.
+
+### Run propensity matching
+```{r}
+
 ```
