@@ -3,4 +3,6 @@ project:
   output-dir: docs
 
 website:
-  title: "Assistant to the Regional Data Manager"
+  navbar:
+    background: primary
+    search: true

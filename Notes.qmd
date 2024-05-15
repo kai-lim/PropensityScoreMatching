@@ -1,6 +1,9 @@
 ---
 title: "Notes on propensity score matching"
-format: html
+format:
+  html:
+    toc: true
+    theme: cosmo
 ---
 
 # Propensity score matching 
