@@ -1,4 +1,6 @@
 project: 
   type: website
   output-dir: docs
-  
+
+website:
+  title: "Assistant to the Regional Data Manager"
