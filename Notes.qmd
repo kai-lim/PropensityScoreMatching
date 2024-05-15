@@ -20,6 +20,18 @@ Two steps were taken for propensity score matching:
 1. Match each smoker to a non-smoker based on propensity score, which is calculated based on a range of covariates. 
 2. Check if balance between smokers (i.e., the treated or exposed group) and non-smokers (i.e., the control group) is achieved. We want both groups to have similar characteristics. 
 
+::: {.callout-note collapse="true"}
+There are [six steps](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8246231/) in a complete analysis using propensity score matching: 
+
+1. Preprocess data sets, identify outliers, and interpolate missing values.
+2. A model is specified, such as logistic regression, and trained on the dataset to predict whether a patient will be treated.  For every patient, the trained model generates a probability of receiving treatment; i.e., his or her PS.
+3. Matching based on PS, where different matching methods are tried, such as nearest neighbor, or optimal or genetic matching
+4. The balance of covariates between treatment and control groups is checked by calculating balance statistics and generating plots. A poor balance indicates that the model estimating PS needs to be respecified.
+5. The treatment effects are estimated using matched data.
+6. Sensitivity analyses are performed to check the robustness of study results for hidden bias
+:::
+
+
 We will use data from this R blogger post. 
 
 ### Load libraries and data
@@ -52,6 +64,24 @@ age - Age of the participants
 [`MatchIt`](https://cran.r-project.org/web/packages/MatchIt/vignettes/MatchIt.html) implements the suggestions of Ho et al. (2007) for improving parametric statistical models for estimating treatment effects in observational studies and reducing model dependence by preprocessing data with semi-parametric and non-parametric matching methods. After appropriately preprocessing with `MatchIt`, researchers can use whatever parametric model they would have used without `MatchIt` and produce inferences that are more robust and less sensitive to modeling assumptions. `MatchIt` reduces the dependence of causal inferences on commonly made, but hard-to-justify, statistical modeling assumptions using a large range of sophisticated matching methods. The package includes several popular approaches to matching and provides access to methods implemented in other packages through its single, unified, and easy-to-use interface.
 
 ### Run propensity matching
-```{r}
+```{r matchit}
+# Using the mathcit function from MatchIt to match each smoker with a non-smoker (1 to 1 matching) based on
+#sex, indigeneity status, high school completion, marital status (partnered or not),
+#region of residence (major cities, inner regional, outer regional), language background (English speaking Yes/No) 
+#and risky alcohol drinking (Yes/No)
+match_obj <- matchit(smoker ~ sex + indigeneity + high_school + partnered + remoteness + language + risky_alcohol + age,
+  data = data, 
+  method = "nearest", 
+  distance ="glm",
+  ratio = 1,
+  replace = FALSE
+  )
+summary(match_obj)
+```
 
+### Plot results 
+```{r plot}
+plot(match_obj, type = "jitter")
+
+plot(match_obj, type = "hist")
 ```

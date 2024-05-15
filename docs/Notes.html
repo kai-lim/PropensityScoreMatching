@@ -81,24 +81,53 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </style>
 
 
-<script src="Notes_files/libs/clipboard/clipboard.min.js"></script>
-<script src="Notes_files/libs/quarto-html/quarto.js"></script>
-<script src="Notes_files/libs/quarto-html/popper.min.js"></script>
-<script src="Notes_files/libs/quarto-html/tippy.umd.min.js"></script>
-<script src="Notes_files/libs/quarto-html/anchor.min.js"></script>
-<link href="Notes_files/libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="Notes_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
-<script src="Notes_files/libs/bootstrap/bootstrap.min.js"></script>
-<link href="Notes_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="Notes_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
 
 
 </head>
 
 <body class="fullcontent">
 
-<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
-
+<div id="quarto-search-results"></div>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    
+<!-- main -->
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
@@ -129,6 +158,30 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li>Match each smoker to a non-smoker based on propensity score, which is calculated based on a range of covariates.</li>
 <li>Check if balance between smokers (i.e., the treated or exposed group) and non-smokers (i.e., the control group) is achieved. We want both groups to have similar characteristics.</li>
 </ol>
+<div class="callout-note callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Note
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>There are <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8246231/">six steps</a> in a complete analysis using propensity score matching:</p>
+<ol type="1">
+<li>Preprocess data sets, identify outliers, and interpolate missing values.</li>
+<li>A model is specified, such as logistic regression, and trained on the dataset to predict whether a patient will be treated. For every patient, the trained model generates a probability of receiving treatment; i.e., his or her PS.</li>
+<li>Matching based on PS, where different matching methods are tried, such as nearest neighbor, or optimal or genetic matching</li>
+<li>The balance of covariates between treatment and control groups is checked by calculating balance statistics and generating plots. A poor balance indicates that the model estimating PS needs to be respecified.</li>
+<li>The treatment effects are estimated using matched data.</li>
+<li>Sensitivity analyses are performed to check the robustness of study results for hidden bias</li>
+</ol>
+</div>
+</div>
+</div>
 <p>We will use data from this R blogger post.</p>
 <section id="load-libraries-and-data" class="level3">
 <h3 class="anchored" data-anchor-id="load-libraries-and-data">Load libraries and data</h3>
@@ -193,13 +246,100 @@ dbl (10): sex, indigeneity, high_school, partnered, remoteness, language, sm...
 <section id="run-propensity-matching" class="level3">
 <h3 class="anchored" data-anchor-id="run-propensity-matching">Run propensity matching</h3>
 <div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Using the mathcit function from MatchIt to match each smoker with a non-smoker (1 to 1 matching) based on</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="co">#sex, indigeneity status, high school completion, marital status (partnered or not),</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="co">#region of residence (major cities, inner regional, outer regional), language background (English speaking Yes/No) </span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="co">#and risky alcohol drinking (Yes/No)</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>match_obj <span class="ot">&lt;-</span> <span class="fu">matchit</span>(smoker <span class="sc">~</span> sex <span class="sc">+</span> indigeneity <span class="sc">+</span> high_school <span class="sc">+</span> partnered <span class="sc">+</span> remoteness <span class="sc">+</span> language <span class="sc">+</span> risky_alcohol <span class="sc">+</span> age,</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> data, </span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">method =</span> <span class="st">"nearest"</span>, </span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">distance =</span><span class="st">"glm"</span>,</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">ratio =</span> <span class="dv">1</span>,</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">replace =</span> <span class="cn">FALSE</span></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(match_obj)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+matchit(formula = smoker ~ sex + indigeneity + high_school + 
+    partnered + remoteness + language + risky_alcohol + age, 
+    data = data, method = "nearest", distance = "glm", replace = FALSE, 
+    ratio = 1)
 
+Summary of Balance for All Data:
+              Means Treated Means Control Std. Mean Diff. Var. Ratio eCDF Mean
+distance             0.1850        0.1130          0.6310     2.0638    0.2035
+sex                  0.4938        0.4421          0.1035          .    0.0518
+indigeneity          0.0524        0.0175          0.1565          .    0.0349
+high_school          0.4220        0.6378         -0.4370          .    0.2158
+partnered            0.4630        0.6913         -0.4578          .    0.2283
+remoteness           0.6119        0.4553          0.1969     1.2318    0.0522
+language             0.9579        0.9130          0.2234          .    0.0449
+risky_alcohol        0.6427        0.5411          0.2120          .    0.1016
+age                 51.6057       53.7824         -0.1676     0.8214    0.0441
+              eCDF Max
+distance        0.3204
+sex             0.0518
+indigeneity     0.0349
+high_school     0.2158
+partnered       0.2283
+remoteness      0.0921
+language        0.0449
+risky_alcohol   0.1016
+age             0.1020
+
+Summary of Balance for Matched Data:
+              Means Treated Means Control Std. Mean Diff. Var. Ratio eCDF Mean
+distance             0.1850        0.1845          0.0042     1.0213    0.0002
+sex                  0.4938        0.4887          0.0103          .    0.0051
+indigeneity          0.0524        0.0390          0.0599          .    0.0133
+high_school          0.4220        0.4045          0.0353          .    0.0175
+partnered            0.4630        0.4713         -0.0165          .    0.0082
+remoteness           0.6119        0.6078          0.0052     1.0051    0.0014
+language             0.9579        0.9671         -0.0460          .    0.0092
+risky_alcohol        0.6427        0.6561         -0.0279          .    0.0133
+age                 51.6057       51.9723         -0.0282     0.9175    0.0145
+              eCDF Max Std. Pair Dist.
+distance        0.0103          0.0053
+sex             0.0051          0.3019
+indigeneity     0.0133          0.2627
+high_school     0.0175          0.1767
+partnered       0.0082          0.1977
+remoteness      0.0021          0.3563
+language        0.0092          0.0665
+risky_alcohol   0.0133          0.1350
+age             0.0370          0.2881
+
+Sample Sizes:
+          Control Treated
+All          7026     974
+Matched       974     974
+Unmatched    6052       0
+Discarded       0       0</code></pre>
+</div>
 </div>
 </section>
+<section id="plot-results" class="level3">
+<h3 class="anchored" data-anchor-id="plot-results">Plot results</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(match_obj, <span class="at">type =</span> <span class="st">"jitter"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Notes_files/figure-html/plot-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>To identify the units, use first mouse button; to stop, use second.</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(match_obj, <span class="at">type =</span> <span class="st">"hist"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Notes_files/figure-html/plot-2.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+
+
+</section>
 </section>
 
-</main>
-<!-- /main column -->
+</main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
   const toggleBodyColorMode = (bsSheetEl) => {
